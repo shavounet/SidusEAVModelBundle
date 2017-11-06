@@ -1,6 +1,9 @@
+parameters:
+    sidus_eav_model.context_manager.default_class: Sidus\EAVModelBundle\Context\ContextManager
+
 services:
     sidus_eav_model.context.manager:
-        class: Sidus\EAVModelBundle\Context\ContextManager
+        class: '%sidus_eav_model.context_manager.default_class%'
         arguments:
             - '@form.factory'
             - '%sidus_eav_model.context.form_type%'

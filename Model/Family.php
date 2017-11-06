@@ -19,10 +19,10 @@
 
 namespace Sidus\EAVModelBundle\Model;
 
+use Sidus\EAVModelBundle\Context\ContextManagerInterface;
 use Sidus\EAVModelBundle\Exception\MissingAttributeException;
 use Sidus\EAVModelBundle\Registry\AttributeRegistry;
 use Sidus\EAVModelBundle\Registry\FamilyRegistry;
-use Sidus\EAVModelBundle\Context\ContextManager;
 use Sidus\EAVModelBundle\Entity\ContextualValueInterface;
 use Sidus\EAVModelBundle\Entity\DataInterface;
 use Sidus\EAVModelBundle\Entity\ValueInterface;
@@ -85,15 +85,15 @@ class Family implements FamilyInterface
     /** @var string */
     protected $valueClass;
 
-    /** @var ContextManager */
+    /** @var ContextManagerInterface */
     protected $contextManager;
 
     /**
-     * @param string            $code
-     * @param AttributeRegistry $attributeRegistry
-     * @param FamilyRegistry    $familyRegistry
-     * @param ContextManager    $contextManager
-     * @param array             $config
+     * @param string                  $code
+     * @param AttributeRegistry       $attributeRegistry
+     * @param FamilyRegistry          $familyRegistry
+     * @param ContextManagerInterface $contextManager
+     * @param array                   $config
      *
      * @throws UnexpectedValueException
      * @throws MissingFamilyException
@@ -107,9 +107,10 @@ class Family implements FamilyInterface
         /** @noinspection PhpInternalEntityUsedInspection */
         AttributeRegistry $attributeRegistry,
         FamilyRegistry $familyRegistry,
-        ContextManager $contextManager,
+        ContextManagerInterface $contextManager,
         array $config = null
-    ) {
+    )
+    {
         $this->code = $code;
         $this->familyRegistry = $familyRegistry;
         $this->contextManager = $contextManager;

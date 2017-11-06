@@ -636,6 +636,7 @@ abstract class AbstractData implements ContextualDataInterface
             $context = $this->getCurrentContext();
         }
 
+        // General case : get all values matching the exact context
         if (null === $attribute) {
             $values = new ArrayCollection();
             foreach ($this->values as $value) {
@@ -649,6 +650,7 @@ abstract class AbstractData implements ContextualDataInterface
         }
         $this->checkAttribute($attribute);
 
+        // Specific case : get all values for the given attribute matching the exact context
         $values = new ArrayCollection();
         foreach ($this->getValuesByAttribute($attribute) as $value) {
             if ($value instanceof ContextualValueInterface) {
@@ -659,6 +661,12 @@ abstract class AbstractData implements ContextualDataInterface
                 $values->add($value);
             }
         }
+
+        // Generic case : if nothing has matched, try another context mask
+        if (!count($values) && $attribute->getContextMask()) {
+            // TODO
+        }
+
         if (0 === count($values) && null !== $attribute->getDefault()) {
             return $this->createDefaultValues($attribute, $context);
         }
