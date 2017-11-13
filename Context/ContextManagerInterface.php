@@ -26,6 +26,8 @@ namespace Sidus\EAVModelBundle\Context;
  */
 interface ContextManagerInterface
 {
+    const SESSION_KEY = 'sidus_data_context';
+
     /**
      * Get the current context
      *
@@ -35,17 +37,11 @@ interface ContextManagerInterface
 
     /**
      * Set the current context
+     * Note that the context values are not validated (except using the standard form)
      *
-     * @return array
+     * @param array $context
      */
     public function setContext(array $context);
-
-    /**
-     * Get the form used to manage context
-     *
-     * @return array
-     */
-    public function getContextSelectorForm();
 
     /**
      * Get the default context

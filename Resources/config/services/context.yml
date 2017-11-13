@@ -1,12 +1,26 @@
 parameters:
     sidus_eav_model.context_manager.default_class: Sidus\EAVModelBundle\Context\ContextManager
+    sidus_eav_model.context_form_builder.default_class: Sidus\EAVModelBundle\Form\ContextFormBuilder
 
 services:
     sidus_eav_model.context.manager:
         class: '%sidus_eav_model.context_manager.default_class%'
         arguments:
-            - '@form.factory'
-            - '%sidus_eav_model.context.form_type%'
             - '%sidus_eav_model.context.default_context%'
+            - '@session'
+
+    sidus_eav_model.context.form_builder:
+        class: '%sidus_eav_model.context_form_builder.default_class%'
+        arguments:
+            - '%sidus_eav_model.context.form_type%'
+            - '@request_stack'
+            - '@form.factory'
+            - '@sidus_eav_model.context.manager'
+
+    sidus_eav_model.context.listener:
+        class: Sidus\EAVModelBundle\Event\ContextListener
+        arguments:
+            - '@sidus_eav_model.context.form_builder'
+            - '@sidus_eav_model.context.manager'
         tags:
             - { name: kernel.event_listener, event: kernel.request, method: onKernelRequest, priority: 10 }

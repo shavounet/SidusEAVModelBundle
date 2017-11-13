@@ -19,13 +19,7 @@
 
 namespace Sidus\EAVModelBundle\Context;
 
-use Symfony\Component\Form\FormFactoryInterface;
-use Symfony\Component\Form\FormInterface;
-use Symfony\Component\HttpFoundation\RedirectResponse;
-use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Session\SessionInterface;
-use Symfony\Component\HttpKernel\Event\GetResponseEvent;
-use Symfony\Component\OptionsResolver\Exception\InvalidOptionsException;
 
 /**
  * Manager for setting, saving and getting the current context when using ContextualData & ContextualValue
@@ -34,40 +28,30 @@ use Symfony\Component\OptionsResolver\Exception\InvalidOptionsException;
  */
 class ContextManager implements ContextManagerInterface
 {
-    const SESSION_KEY = 'sidus_data_context';
-
-    /** @var FormFactoryInterface */
-    protected $formFactory;
 
     /** @var array */
     protected $defaultContext;
 
-    /** @var Request */
-    protected $request;
-
-    /** @var string */
-    protected $contextSelectorType;
-
-    /** @var FormInterface */
-    protected $contextSelectorForm;
-
     /** @var array */
     protected $context;
 
+    /** @var SessionInterface */
+    protected $session;
+
     /**
-     * @param FormFactoryInterface $formFactory
-     * @param string               $contextSelectorType
-     * @param array                $defaultContext
+     * ContextManager constructor.
+     *
+     * @param array            $defaultContext
+     * @param SessionInterface $session
      */
-    public function __construct(FormFactoryInterface $formFactory, $contextSelectorType, array $defaultContext)
+    public function __construct(array $defaultContext, SessionInterface $session)
     {
-        $this->formFactory = $formFactory;
-        $this->contextSelectorType = $contextSelectorType;
         $this->defaultContext = $defaultContext;
+        $this->session = $session;
     }
 
     /**
-     * @return array
+     * {@inheritdoc}
      */
     public function getContext()
     {
@@ -85,11 +69,7 @@ class ContextManager implements ContextManagerInterface
     }
 
     /**
-     * This method is exposed only for command-line applications, please use the context selector form
-     *
-     * @param array $context
-     *
-     * @internal Warning, this method will save the context without any checks on the values
+     * {@inheritdoc}
      */
     public function setContext(array $context)
     {
@@ -103,7 +83,7 @@ class ContextManager implements ContextManagerInterface
     }
 
     /**
-     * @return array
+     * {@inheritdoc}
      */
     public function getDefaultContext()
     {
@@ -111,66 +91,12 @@ class ContextManager implements ContextManagerInterface
     }
 
     /**
-     * @return FormInterface
-     * @throws InvalidOptionsException
-     */
-    public function getContextSelectorForm()
-    {
-        if (!$this->contextSelectorForm) {
-            if (!$this->contextSelectorType) {
-                return null;
-            }
-
-            $formOptions = [
-                'action' => $this->request->getRequestUri(),
-                'attr' => [
-                    'novalidate' => 'novalidate',
-                    'class' => 'form-inline',
-                ],
-            ];
-            $this->contextSelectorForm = $this->formFactory->createNamed(
-                self::SESSION_KEY,
-                $this->contextSelectorType,
-                $this->getContext(),
-                $formOptions
-            );
-        }
-
-        return $this->contextSelectorForm;
-    }
-
-    /**
-     * Global hook checking if context form was submitted because the context form can appear on any page
-     *
-     * @param GetResponseEvent $event
-     *
-     * @throws \InvalidArgumentException
-     */
-    public function onKernelRequest(GetResponseEvent $event)
-    {
-        $this->request = $event->getRequest();
-
-        $form = $this->getContextSelectorForm();
-        if (!$form) {
-            return;
-        }
-
-        $form->handleRequest($this->request);
-        // Check if form is submitted and redirect to same url in GET
-        if ($form->isSubmitted() && $form->isValid()) {
-            $this->setContext($form->getData());
-            $redirectResponse = new RedirectResponse($event->getRequest()->getRequestUri());
-            $event->setResponse($redirectResponse);
-        }
-    }
-
-    /**
      * @return null|SessionInterface
      */
     protected function getSession()
     {
-        if ($this->request) {
-            return $this->request->getSession();
+        if ($this->session) {
+            return $this->session;
         }
 
         return null;
