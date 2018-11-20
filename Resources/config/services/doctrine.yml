@@ -1,7 +1,7 @@
 services:
     sidus_eav_model.entity_manager:
         class: Doctrine\ORM\EntityManagerInterface
-        factory: 'Doctrine\Common\Persistence\ManagerRegistry:getManagerForClass'
+        factory: 'doctrine:getManagerForClass'
         arguments:
             - '%sidus_eav_model.entity.data.class%'
 
@@ -21,4 +21,4 @@ services:
     Sidus\EAVModelBundle\Doctrine\IntegrityConstraintManager:
         class: Sidus\EAVModelBundle\Doctrine\IntegrityConstraintManager
         arguments:
-            - '@Doctrine\Common\Persistence\ManagerRegistry'
+            - '@doctrine'
