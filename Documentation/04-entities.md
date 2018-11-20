@@ -33,7 +33,7 @@ config_dev.yml:
 
 ````yml
 imports:
-    - { resource: '@SidusEAVModelBundle/Resources/config/annotation_generator.yml' }
+    - { resource: '@SidusEAVModelBundle/Resources/config/services/annotation_generator.yml' }
 ````
 
 It is VERY important to never actually use the generated classes apart from annotations because they wont work.
